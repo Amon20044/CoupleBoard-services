@@ -1,24 +1,39 @@
+import fs from 'fs';
 import multer from 'multer';
+import path from 'path';
 
-// Use memory storage (avoids saving files locally)
-const storage = multer.memoryStorage();
+// Ensure 'uploads' folder exists
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true }); // Creates the folder if it doesn't exist
+}
 
-// File filter (allow only images/videos)
+// Storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); // Save files in 'uploads/' directory
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+// File filter (allow only images & videos)
 const fileFilter = (req, file, cb) => {
-  const allowedFileTypes = /jpeg|jpg|png|gif|mp4|mov|avi/;
-  const extname = allowedFileTypes.test(file.originalname.toLowerCase());
-  const mimetype = allowedFileTypes.test(file.mimetype);
+  const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.mp4', '.mov', '.avi', '.mkv'];
+  const ext = path.extname(file.originalname).toLowerCase();
 
-  if (mimetype && extname) return cb(null, true);
+  if (allowedExtensions.includes(ext)) {
+    return cb(null, true);
+  }
   return cb(new Error('Only images and videos are allowed!'), false);
 };
 
-// File upload settings
+// Upload instance for multiple files (max 100 files, each max 2GB)
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file limit
+  limits: { fileSize: 2000 * 1024 * 1024 }, // 2GB file limit
   fileFilter
-});
-
+}).array('files', 100); // Accept multiple files
 
 export { upload };

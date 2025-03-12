@@ -11,14 +11,10 @@ import routes from './routes/index.js';
 dotenv.config();
 
 const app = express(); // Declare app
-
-app.use(morgan('dev'));
-app.use(helmet());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173", // Allow only your frontend URL
     credentials: true, // Allow cookies if needed
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
   })
 );
 app.use(express.json());
