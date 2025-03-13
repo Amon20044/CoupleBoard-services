@@ -20,6 +20,9 @@ const uploadMedia = async (req, res) => {
 
       const media = await addMedia(album_id, media_url, media_type);
       uploadedMedia.push(media);
+      fs.unlink(file.path, (err) => {
+        if (err) console.error(`Error deleting file ${file.path}:`, err);
+      });
     }
 
     res.status(201).json({
