@@ -3,9 +3,9 @@ import multer from 'multer';
 import path from 'path';
 
 // Ensure 'uploads' folder exists
-const uploadDir = 'uploads/';
+const uploadDir = '/tmp/uploads';
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true }); // Creates the folder if it doesn't exist
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Storage configuration
