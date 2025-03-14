@@ -9,14 +9,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // Save files in 'uploads/' directory
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+const storage = multer.memoryStorage();
 
 // File filter (allow only images & videos)
 const fileFilter = (req, file, cb) => {
@@ -34,6 +27,6 @@ const upload = multer({
   storage,
   limits: { fileSize: 2000 * 1024 * 1024 }, // 2GB file limit
   fileFilter
-}).array('files', 100); // Accept multiple files
+}).array('images', 100); // Accept multiple files
 
 export { upload };

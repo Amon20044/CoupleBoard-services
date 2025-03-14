@@ -6,33 +6,32 @@ import { getMediaType } from '../utils/fileTypeChecker.js';
 const uploadMedia = async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: 'No files uploaded' });
+      return res.status(400).json({ message: "No files uploaded" });
     }
 
     const album_id = req.params.album_id;
     const uploadedMedia = [];
 
     for (const file of req.files) {
-      const media_url = await uploadToCloudinary(file.path); // Use file.path for diskStorage()
+      // Upload buffer to Cloudinary instead of file.path
+      const media_url = await uploadToCloudinary(file.buffer); // ✅ Use file.buffer
       const media_type = getMediaType(file.originalname);
       
       console.log(media_url, album_id, media_type);
 
       const media = await addMedia(album_id, media_url, media_type);
       uploadedMedia.push(media);
-      fs.unlink(file.path, (err) => {
-        if (err) console.error(`Error deleting file ${file.path}:`, err);
-      });
     }
 
     res.status(201).json({
-      message: 'Media uploaded successfully',
+      message: "Media uploaded successfully",
       media: uploadedMedia
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 // Get media by album ID
