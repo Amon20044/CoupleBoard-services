@@ -24,24 +24,43 @@ const getMediaByAlbum = async (albumId) => {
 const getMediaByUser = async (userID) => {
   console.log(userID);
   try {
-      const { data, error } = await supabase
-          .from("media")
-          .select("media_url, media_type, uploaded_at, albums(album_name)")
-          .eq("albums.user_id", userID)
-          .order("uploaded_at", { ascending: false });
-
-      if (error) {
-          console.error("❌ Error fetching user media:", error);
-          return { success: false, error };
-      }
-
-      console.log("✅ Media fetched successfully:", data);
-      return { success: true, data };
+    // First, get all albums for this user
+    const { data: userAlbums, error: albumError } = await supabase
+      .from("albums")
+      .select("id")
+      .eq("user_id", userID);
+    
+    if (albumError) {
+      console.error("❌ Error fetching user albums:", albumError);
+      return { success: false, error: albumError };
+    }
+    
+    if (!userAlbums || userAlbums.length === 0) {
+      console.log("No albums found for this user");
+      return { success: true, data: [] };
+    }
+    
+    // Extract album IDs
+    const albumIds = userAlbums.map(album => album.id);
+    
+    // Now get all media from these albums
+    const { data, error } = await supabase
+      .from("media")
+      .select("media_url, media_type, uploaded_at, album_id")
+      .in("album_id", albumIds)
+      .order("uploaded_at", { ascending: false });
+    
+    if (error) {
+      console.error("❌ Error fetching user media:", error);
+      return { success: false, error };
+    }
+    
+    console.log("✅ Media fetched successfully:", data);
+    return { success: true, data };
   } catch (err) {
-      console.error("❌ Unexpected error:", err);
-      return { success: false, error: err };
+    console.error("❌ Unexpected error:", err);
+    return { success: false, error: err };
   }
 };
-
 
 export { addMedia, getMediaByAlbum , getMediaByUser};
