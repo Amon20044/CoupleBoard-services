@@ -1,14 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 // Storage setup for uploaded files
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+const storage = multer.memoryStorage();
 
 // File filter (allow only images)
 const fileFilter = (req, file, cb) => {
@@ -25,6 +18,6 @@ const upload = multer({
   storage,
   limits: { fileSize: 500 * 1024 * 1024 }, // 5MB file limit
   fileFilter
-}).array('file', 100);
+}).array('images', 100);
 
 export { upload };
