@@ -14,8 +14,8 @@ const uploadMedia = async (req, res) => {
 
     for (const file of req.files) {
       // Upload buffer to Cloudinary instead of file.path
-      const media_url = await uploadToCloudinary(file.buffer); // ✅ Use file.buffer
       const media_type = getMediaType(file.originalname);
+      const media_url = await uploadToCloudinary(file.buffer, media_type); // ✅ Use file.buffer
       
       console.log(media_url, album_id, media_type);
 

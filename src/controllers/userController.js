@@ -3,6 +3,10 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import process from 'process';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
+import { getMediaType } from '../utils/fileTypeChecker.js';
+
+
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
@@ -17,7 +21,14 @@ const registerUser = async (req, res) => {
     const existingUser = await getUserByEmail(partner1_email) || await getUserByEmail(partner2_email);
     if (existingUser) return res.status(400).json({ message: 'Email already in use' });
 
-    const user = await createUser(name_1, name_2, partner1_email, partner2_email, password_hash);
+    const male = req.files?.[0];
+    const female = req.files?.[1];
+    const maleType = getMediaType(male);
+    const femaleType = getMediaType(female);
+    const male_url = await uploadToCloudinary(male.buffer, maleType);
+    const female_url = await uploadToCloudinary(female.buffer, femaleType);
+    
+    const user = await createUser(name_1, name_2, partner1_email, partner2_email, password_hash , male_url, female_url);
     res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
     res.status(500).json({ message: 'User registration failed', error: error.message });

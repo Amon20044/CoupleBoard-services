@@ -2,7 +2,7 @@ import { supabase } from '../utils/db.js';
 import bcrypt from 'bcrypt';  // For password hashing
 
 // Create new user (Partner-based)
-const createUser = async (name_1, name_2, partner1_email, partner2_email, password_hash) => {
+const createUser = async (name_1, name_2, partner1_email, partner2_email, password_hash, f_url , m_url) => {
   const hashedPassword = await bcrypt.hash(password_hash, 10);
 
   const { data, error } = await supabase
@@ -12,7 +12,9 @@ const createUser = async (name_1, name_2, partner1_email, partner2_email, passwo
       name_2, 
       partner1_email, 
       partner2_email, 
-      password_hash: hashedPassword 
+      password_hash: hashedPassword,
+      f_url : f_url,
+      m_url : m_url
     }])
     .select()
     .single();
