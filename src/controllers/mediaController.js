@@ -8,32 +8,37 @@ const uploadMedia = async (req, res) => {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: "No files uploaded" });
     }
-
+    
     const album_id = req.params.album_id;
     const uploadedMedia = [];
-
+    
     for (const file of req.files) {
-      // Upload buffer to Cloudinary instead of file.path
+      // Get media type from the file's original name
       const media_type = getMediaType(file.originalname);
-      const media_url = await uploadToCloudinary(file.buffer, media_type); // ✅ Use file.buffer
+      console.log("Media Type:", media_type); // Debugging: Check media type
       
+      // Make sure media_type is valid according to your database constraint
+      if (media_type === 'unknown') {
+        console.log("Skipping file with unknown media type:", file.originalname);
+        continue;
+      }
+      
+      const media_url = await uploadToCloudinary(file.buffer, media_type);
       console.log(media_url, album_id, media_type);
-
+      
       const media = await addMedia(album_id, media_url, media_type);
       uploadedMedia.push(media);
     }
-
+    
     res.status(201).json({
       message: "Media uploaded successfully",
       media: uploadedMedia
     });
   } catch (error) {
+    console.error("Upload error:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 // Get media by album ID
 const getAlbumMedia = async (req, res) => {
   try {
