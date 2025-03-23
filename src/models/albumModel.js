@@ -4,9 +4,10 @@ import { supabase } from '../utils/db.js';
 const createAlbum = async (userId, albumName = 'My Album',desc, coverUrl = null) => {
   const { data, error } = await supabase
     .from('albums')
-    .insert([{ user_id: userId, album_name: albumName, description:desc, cover_url: coverUrl }]);
-  
+    .insert([{ user_id: userId, album_name: albumName, description:desc, cover_url: coverUrl }])
+    .select();
   if (error) throw error;
+  
   return data;
 };
 
