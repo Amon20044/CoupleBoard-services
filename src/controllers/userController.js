@@ -26,18 +26,18 @@ const registerUser = async (req, res) => {
     if (!req.files || req.files.length < 2) {
       return res.status(400).json({ message: 'Both male and female images are required' });
     }
-
-    const male = req.files[0];
-    const female = req.files[1];
-
+    const male = req.files?.[0];
+    const female = req.files?.[1];
+    
     // Get media types
-    const maleType = getMediaType(male);
-    const femaleType = getMediaType(female);
-
+    const maleType = getMediaType(male.originalname);
+    const femaleType = getMediaType(female.orignalname);
+    
     // Upload images to Cloudinary using buffers
     const male_url = await uploadToCloudinary(male.buffer, maleType);
     const female_url = await uploadToCloudinary(female.buffer, femaleType);
-
+    
+    console.log(male_url, female_url)
     // Create the user
     const user = await createUser(name_1, name_2, partner1_email, partner2_email, password_hash, male_url, female_url);
     
