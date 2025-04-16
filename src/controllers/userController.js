@@ -3,8 +3,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import process from 'process';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
-import { getMediaType } from '../utils/fileTypeChecker.js';
 
 
 dotenv.config();
@@ -13,7 +11,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 // Register User (Couple Sign-up)
 const registerUser = async (req, res) => {
   try {
-    const { name_1, name_2, partner1_email, partner2_email, password_hash } = req.body;
+    const { name_1, name_2, partner1_email, partner2_email, password_hash, f_url, m_url } = req.body;
+    console.log(req.body)
     if (!name_1 || !name_2 || !partner1_email || !partner2_email || !password_hash) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -22,24 +21,9 @@ const registerUser = async (req, res) => {
     const existingUser = await getUserByEmail(partner1_email) || await getUserByEmail(partner2_email);
     if (existingUser) return res.status(400).json({ message: 'Email already in use' });
 
-    // Ensure files exist
-    if (!req.files || req.files.length < 2) {
-      return res.status(400).json({ message: 'Both male and female images are required' });
-    }
-    const male = req.files?.[0];
-    const female = req.files?.[1];
-    
-    // Get media types
-    const maleType = getMediaType(male.originalname);
-    const femaleType = getMediaType(female.orignalname);
-    
-    // Upload images to Cloudinary using buffers
-    const male_url = await uploadToCloudinary(male.buffer, maleType);
-    const female_url = await uploadToCloudinary(female.buffer, femaleType);
-    
-    console.log(male_url, female_url)
+    console.log(m_url, f_url)
     // Create the user
-    const user = await createUser(name_1, name_2, partner1_email, partner2_email, password_hash, male_url, female_url);
+    const user = await createUser(name_1, name_2, partner1_email, partner2_email, password_hash, m_url, f_url);
     
     res.status(201).json({ message: 'User registered successfully', user });
 

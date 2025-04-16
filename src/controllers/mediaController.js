@@ -1,38 +1,26 @@
 import { addMedia, getMediaByAlbum, getMediaByUser } from '../models/mediaModel.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js';
+// import { uploadToCloudinary } from '../utils/cloudinary.js';
 import { upload } from '../utils/multer.js';
 import { getMediaType } from '../utils/fileTypeChecker.js';
 // Upload media to Cloudinary & save in Supabase
 const uploadMedia = async (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No files uploaded" });
-    }
-    
+    console.log("Request Body:", req.body); // Debugging: Check request body
+    const urls = req.body; // Assuming req.body.urls contains the URLs of the uploaded files
     const album_id = req.params.album_id;
-    const uploadedMedia = [];
-    
-    for (const file of req.files) {
+    for (const url of urls) {
       // Get media type from the file's original name
-      const media_type = getMediaType(file.originalname);
-      console.log("Media Type:", media_type); // Debugging: Check media type
-      
-      // Make sure media_type is valid according to your database constraint
-      if (media_type === 'unknown') {
-        console.log("Skipping file with unknown media type:", file.originalname);
-        continue;
-      }
-      
-      const media_url = await uploadToCloudinary(file.buffer, media_type);
-      console.log(media_url, album_id, media_type);
-      
-      const media = await addMedia(album_id, media_url, media_type);
-      uploadedMedia.push(media);
+
+      const media_type = url.split('.').pop();
+      console.log(media_type); // "jpg"
+      console.log(url)
+
+      const media = await addMedia(album_id, url, media_type);
+      console.log("Media added:", media); // Debugging: Check if media is added successfully
     }
-    
+
     res.status(201).json({
       message: "Media uploaded successfully",
-      media: uploadedMedia
     });
   } catch (error) {
     console.error("Upload error:", error);
@@ -62,4 +50,4 @@ const getUserMedia = async (req, res) => {
 };
 
 
-export { upload, uploadMedia, getAlbumMedia , getUserMedia};
+export { upload, uploadMedia, getAlbumMedia, getUserMedia };

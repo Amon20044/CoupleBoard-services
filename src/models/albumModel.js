@@ -1,7 +1,7 @@
 import { supabase } from '../utils/db.js';
 
 // Create new album
-const createAlbum = async (userId, albumName = 'My Album',desc, coverUrl = null) => {
+const createAlbum = async (userId, albumName = 'My Album',desc, coverUrl ) => {
   const { data, error } = await supabase
     .from('albums')
     .insert([{ user_id: userId, album_name: albumName, description:desc, cover_url: coverUrl }])
