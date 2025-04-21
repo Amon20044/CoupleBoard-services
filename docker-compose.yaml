@@ -27,7 +27,7 @@ services:
       context: ./src/nginx
       dockerfile: Dockerfile
     ports:
-      - "85:85"
+      - "8080:8080"
     depends_on:
       - user
       - albums

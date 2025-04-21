@@ -38,7 +38,7 @@ app.use('*', (req, res) => {
 app.use(errorHandler);
 
 // ---------- Server ----------
-const PORT = 8082;
+const PORT = 8080;
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
