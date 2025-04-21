@@ -1,7 +1,4 @@
 import { addMedia, getMediaByAlbum, getMediaByUser } from '../models/mediaModel.js';
-// import { uploadToCloudinary } from '../utils/cloudinary.js';
-import { upload } from '../utils/multer.js';
-import { getMediaType } from '../utils/fileTypeChecker.js';
 // Upload media to Cloudinary & save in Supabase
 const uploadMedia = async (req, res) => {
   try {
@@ -50,4 +47,4 @@ const getUserMedia = async (req, res) => {
 };
 
 
-export { upload, uploadMedia, getAlbumMedia, getUserMedia };
+export { uploadMedia, getAlbumMedia, getUserMedia };

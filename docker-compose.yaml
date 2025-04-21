@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  user:
+    build:
+      context: ./src/auth-services
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    restart: always
+    
+  albums:
+    build:
+      context: ./src/album-services
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+
+  media:
+    build:
+      context: ./src/image-services
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+
+  nginx:
+    build:
+      context: ./src/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "85:85"
+    depends_on:
+      - user
+      - albums
+      - media
